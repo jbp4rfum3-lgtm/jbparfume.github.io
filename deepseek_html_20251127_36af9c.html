@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JB Parfume - Manajemen Keuangan</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+            --light: #f5f6fa;
+            --dark: #2d3436;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 28px;
+            margin-left: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+        }
+        
+        .date-display {
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        
+        .jam-aktif {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .jam-aktif.buka {
+            color: #00ff88;
+        }
+        
+        .jam-aktif.tutup {
+            color: #ff4444;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .card .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .total-modal {
+            border-left: 5px solid var(--primary);
+        }
+        
+        .total-penjualan {
+            border-left: 5px solid var(--success);
+        }
+        
+        .total-keuntungan {
+            border-left: 5px solid var(--warning);
+        }
+        
+        .belum-bayar {
+            border-left: 5px solid var(--danger);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        
+        button:hover {
+            background: var(--secondary);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border-radius: 3px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+        
+        .edit-btn {
+            background: var(--warning);
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+        }
+        
+        .paid-btn {
+            background: var(--success);
+        }
+        
+        .backup-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .backup-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .auto-save-indicator {
+            background: #e3f2fd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #1976d2;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        
+        .data-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .jam-transaksi-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .jam-transaksi-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .jam-transaksi-list {
+            margin-top: 20px;
+        }
+        
+        .jam-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .jam-item:last-child {
+            border-bottom: none;
+        }
+        
+        .jam-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .jam-hari {
+            font-weight: bold;
+        }
+        
+        .jam-waktu {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .status-buka {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .status-tutup {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .date-display {
+                margin-top: 10px;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .jam-transaksi-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .backup-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">💎</span>
+                    <h1>JB Parfume</h1>
+                </div>
+                <div>
+                    <div class="date-display" id="current-date"></div>
+                    <div class="jam-aktif" id="status-jam-aktif"></div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card total-modal">
+                <h3>Total Modal</h3>
+                <div class="value" id="total-modal">Rp 0</div>
+                <p>Total biaya produksi</p>
+            </div>
+            <div class="card total-penjualan">
+                <h3>Total Penjualan</h3>
+                <div class="value" id="total-penjualan">Rp 0</div>
+                <p>Pendapatan dari penjualan</p>
+            </div>
+            <div class="card total-keuntungan">
+                <h3>Total Keuntungan</h3>
+                <div class="value" id="total-keuntungan">Rp 0</div>
+                <p>Keuntungan bersih</p>
+            </div>
+            <div class="card belum-bayar">
+                <h3>Belum Bayar</h3>
+                <div class="value" id="total-belum-bayar">Rp 0</div>
+                <p>Piutang pelanggan</p>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="produk">Produk</div>
+            <div class="tab" data-tab="penjualan">Penjualan</div>
+            <div class="tab" data-tab="pengeluaran">Pengeluaran</div>
+            <div class="tab" data-tab="piutang">Piutang</div>
+            <div class="tab" data-tab="jam-transaksi">Jam Transaksi</div>
+            <div class="tab" data-tab="backup">Backup Data</div>
+        </div>
+        
+        <div class="tab-content active" id="produk-tab">
+            <div class="card">
+                <h3>Tambah/Edit Produk</h3>
+                <form id="produk-form">
+                    <input type="hidden" id="produk-id">
+                    <div class="form-group">
+                        <label for="nama-produk">Nama Produk</label>
+                        <input type="text" id="nama-produk" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="harga-produk">Harga Jual (Rp)</label>
+                        <input type="number" id="harga-produk" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-produk">Modal Produk (Rp)</label>
+                        <input type="number" id="modal-produk" required>
+                    </div>
+                    <button type="submit" id="simpan-produk">Simpan Produk</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Daftar Produk</h3>
+                <table id="tabel-produk">
+                    <thead>
+                        <tr>
+                            <th>Nama Produk</th>
+                            <th>Harga Jual</th>
+                            <th>Modal</th>
+                            <th>Keuntungan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data produk akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="penjualan-tab">
+            <div class="card">
+                <h3>Tambah Penjualan</h3>
+                <form id="penjualan-form">
+                    <div class="form-group">
+                        <label for="produk-terjual">Produk</label>
+                        <select id="produk-terjual" required>
+                            <option value="">Pilih Produk</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="jumlah-terjual">Jumlah Terjual</label>
+                        <input type="number" id="jumlah-terjual" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal-penjualan">Tanggal Penjualan</label>
+                        <input type="date" id="tanggal-penjualan" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jam-penjualan">Jam Penjualan</label>
+                        <input type="time" id="jam-penjualan" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status-bayar">Status Pembayaran</label>
+                        <select id="status-bayar">
+                            <option value="lunas">Lunas</option>
+                            <option value="belum">Belum Bayar</option>
+                        </select>
+                    </div>
+                    <button type="submit">Simpan Penjualan</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Riwayat Penjualan</h3>
+                <table id="tabel-penjualan">
+                    <thead>
+                        <tr>
+                            <th>Tanggal & Jam</th>
+                            <th>Produk</th>
+                            <th>Jumlah</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data penjualan akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="pengeluaran-tab">
+            <div class="card">
+                <h3>Tambah Pengeluaran</h3>
+                <form id="pengeluaran-form">
+                    <div class="form-group">
+                        <label for="kategori-pengeluaran">Kategori Pengeluaran</label>
+                        <select id="kategori-pengeluaran" required>
+                            <option value="bahan-baku">Bahan Baku</option>
+                            <option value="kemasan">Kemasan</option>
+                            <option value="operasional">Operasional</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="deskripsi-pengeluaran">Deskripsi</label>
+                        <input type="text" id="deskripsi-pengeluaran" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jumlah-pengeluaran">Jumlah (Rp)</label>
+                        <input type="number" id="jumlah-pengeluaran" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal-pengeluaran">Tanggal Pengeluaran</label>
+                        <input type="date" id="tanggal-pengeluaran" required>
+                    </div>
+                    <button type="submit">Simpan Pengeluaran</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Riwayat Pengeluaran</h3>
+                <table id="tabel-pengeluaran">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Kategori</th>
+                            <th>Deskripsi</th>
+                            <th>Jumlah</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data pengeluaran akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="piutang-tab">
+            <div class="card">
+                <h3>Daftar Piutang</h3>
+                <table id="tabel-piutang">
+                    <thead>
+                        <tr>
+                            <th>Tanggal & Jam</th>
+                            <th>Produk</th>
+                            <th>Jumlah</th>
+                            <th>Total</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data piutang akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="jam-transaksi-tab">
+            <div class="jam-transaksi-container">
+                <h3>Pengaturan Jam Transaksi</h3>
+                <p>Atur jam operasional JB Parfume untuk menampilkan status "Buka" atau "Tutup"</p>
+                
+                <form id="jam-transaksi-form" class="jam-transaksi-form">
+                    <div class="form-group">
+                        <label for="hari-transaksi">Hari</label>
+                        <select id="hari-transaksi" required>
+                            <option value="senin">Senin</option>
+                            <option value="selasa">Selasa</option>
+                            <option value="rabu">Rabu</option>
+                            <option value="kamis">Kamis</option>
+                            <option value="jumat">Jumat</option>
+                            <option value="sabtu">Sabtu</option>
+                            <option value="minggu">Minggu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="buka-transaksi">Jam Buka</label>
+                        <input type="time" id="buka-transaksi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tutup-transaksi">Jam Tutup</label>
+                        <input type="time" id="tutup-transaksi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status-transaksi">Status</label>
+                        <select id="status-transaksi">
+                            <option value="buka">Buka</option>
+                            <option value="tutup">Tutup</option>
+                        </select>
+                    </div>
+                    <button type="submit">Simpan Jam Transaksi</button>
+                </form>
+                
+                <div class="jam-transaksi-list">
+                    <h4>Jam Operasional Saat Ini</h4>
+                    <div id="daftar-jam-transaksi">
+                        <!-- Daftar jam transaksi akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="backup-tab">
+            <div class="backup-section">
+                <h3>🛡️ Backup & Restore Data</h3>
+                <p>Lakukan backup data secara berkala untuk mencegah kehilangan data.</p>
+                
+                <div class="backup-buttons">
+                    <button onclick="exportData()" class="action-btn" style="background: var(--success)">
+                        📥 Export Data ke File
+                    </button>
+                    <button onclick="document.getElementById('import-file').click()" class="action-btn" style="background: var(--warning)">
+                        📤 Import Data dari File
+                    </button>
+                    <input type="file" id="import-file" accept=".json" style="display: none" onchange="importData(this)">
+                    
+                    <button onclick="backupToLocal()" class="action-btn" style="background: var(--primary)">
+                        💾 Backup Sekarang
+                    </button>
+                    
+                    <button onclick="clearAllData()" class="action-btn" style="background: var(--danger)">
+                        🗑️ Hapus Semua Data
+                    </button>
+                </div>
+                
+                <div class="auto-save-indicator">
+                    ⚡ Auto-save aktif (setiap 30 detik)
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📊 Statistik Data</h3>
+                <div id="data-stats">
+                    <!-- Statistik akan diisi oleh JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>JB Parfume - Sistem Manajemen Keuangan &copy; 2023</p>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let produk = JSON.parse(localStorage.getItem('produk')) || [];
+        let penjualan = JSON.parse(localStorage.getItem('penjualan')) || [];
+        let pengeluaran = JSON.parse(localStorage.getItem('pengeluaran')) || [];
+        let jamTransaksi = JSON.parse(localStorage.getItem('jamTransaksi')) || [
+            { hari: 'senin', buka: '08:00', tutup: '17:00', status: 'buka' },
+            { hari: 'selasa', buka: '08:00', tutup: '17:00', status: 'buka' },
+            { hari: 'rabu', buka: '08:00', tutup: '17:00', status: 'buka' },
+            { hari: 'kamis', buka: '08:00', tutup: '17:00', status: 'buka' },
+            { hari: 'jumat', buka: '08:00', tutup: '17:00', status: 'buka' },
+            { hari: 'sabtu', buka: '09:00', tutup: '15:00', status: 'buka' },
+            { hari: 'minggu', buka: '00:00', tutup: '00:00', status: 'tutup' }
+        ];
+        
+        // DOM Elements
+        const currentDateEl = document.getElementById('current-date');
+        const statusJamAktifEl = document.getElementById('status-jam-aktif');
+        const totalModalEl = document.getElementById('total-modal');
+        const totalPenjualanEl = document.getElementById('total-penjualan');
+        const totalKeuntunganEl = document.getElementById('total-keuntungan');
+        const totalBelumBayarEl = document.getElementById('total-belum-bayar');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date and time
+            updateWaktu();
+            setInterval(updateWaktu, 1000);
+            
+            // Set default date for forms
+            const now = new Date();
+            document.getElementById('tanggal-penjualan').valueAsDate = now;
+            document.getElementById('jam-penjualan').value = formatTime(now);
+            document.getElementById('tanggal-pengeluaran').valueAsDate = now;
+            
+            // Load data
+            loadProduk();
+            loadPenjualan();
+            loadPengeluaran();
+            loadJamTransaksi();
+            updateDashboard();
+            updateDataStats();
+            
+            // Setup tabs
+            setupTabs();
+            
+            // Setup form handlers
+            setupFormHandlers();
+            
+            // Check jam aktif
+            checkJamAktif();
+            
+            // Auto-save setiap 30 detik
+            setInterval(autoSave, 30000);
+        });
+        
+        // Update waktu
+        function updateWaktu() {
+            const now = new Date();
+            currentDateEl.textContent = now.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }) + ' | ' + now.toLocaleTimeString('id-ID');
+        }
+        
+        // Check jam aktif
+        function checkJamAktif() {
+            const now = new Date();
+            const hari = now.toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase();
+            const jam = formatTime(now);
+            
+            const jamHariIni = jamTransaksi.find(j => j.hari === hari);
+            
+            if (jamHariIni && jamHariIni.status === 'buka') {
+                const buka = jamHariIni.buka;
+                const tutup = jamHariIni.tutup;
+                
+                if (jam >= buka && jam <= tutup) {
+                    statusJamAktifEl.textContent = 'BUKA - ' + buka + ' - ' + tutup;
+                    statusJamAktifEl.className = 'jam-aktif buka';
+                } else {
+                    statusJamAktifEl.textContent = 'TUTUP - Buka jam ' + buka;
+                    statusJamAktifEl.className = 'jam-aktif tutup';
+                }
+            } else {
+                statusJamAktifEl.textContent = 'TUTUP - Lihat jam operasional';
+                statusJamAktifEl.className = 'jam-aktif tutup';
+            }
+        }
+        
+        // Setup tabs
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show selected tab content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+        
+        // Setup form handlers
+        function setupFormHandlers() {
+            // Produk form
+            document.getElementById('produk-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                simpanProduk();
+            });
+            
+            // Penjualan form
+            document.getElementById('penjualan-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                simpanPenjualan();
+            });
+            
+            // Pengeluaran form
+            document.getElementById('pengeluaran-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                simpanPengeluaran();
+            });
+            
+            // Jam transaksi form
+            document.getElementById('jam-transaksi-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                simpanJamTransaksi();
+            });
+        }
+        
+        // Load produk data
+        function loadProduk() {
+            const tabelProduk = document.getElementById('tabel-produk').getElementsByTagName('tbody')[0];
+            const selectProduk = document.getElementById('produk-terjual');
+            
+            // Clear existing options except the first one
+            while (selectProduk.children.length > 1) {
+                selectProduk.removeChild(selectProduk.lastChild);
+            }
+            
+            // Clear table
+            tabelProduk.innerHTML = '';
+            
+            // Add produk to table and select
+            produk.forEach((p, index) => {
+                // Add to table
+                const row = tabelProduk.insertRow();
+                row.innerHTML = `
+                    <td>${p.nama}</td>
+                    <td>Rp ${formatNumber(p.harga)}</td>
+                    <td>Rp ${formatNumber(p.modal)}</td>
+                    <td>Rp ${formatNumber(p.harga - p.modal)}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editProduk(${index})">Edit</button>
+                        <button class="action-btn delete-btn" onclick="hapusProduk(${index})">Hapus</button>
+                    </td>
+                `;
+                
+                // Add to select
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = p.nama;
+                selectProduk.appendChild(option);
+            });
+        }
+        
+        // Load penjualan data
+        function loadPenjualan() {
+            const tabelPenjualan = document.getElementById('tabel-penjualan').getElementsByTagName('tbody')[0];
+            const tabelPiutang = document.getElementById('tabel-piutang').getElementsByTagName('tbody')[0];
+            
+            // Clear tables
+            tabelPenjualan.innerHTML = '';
+            tabelPiutang.innerHTML = '';
+            
+            // Add penjualan to table
+            penjualan.forEach((j, index) => {
+                const produkData = produk[j.produkIndex];
+                const total = produkData.harga * j.jumlah;
+                
+                // Add to penjualan table
+                const row = tabelPenjualan.insertRow();
+                row.innerHTML = `
+                    <td>${formatDate(j.tanggal)} ${j.jam || ''}</td>
+                    <td>${produkData.nama}</td>
+                    <td>${j.jumlah}</td>
+                    <td>Rp ${formatNumber(total)}</td>
+                    <td>${j.status === 'lunas' ? 'Lunas' : 'Belum Bayar'}</td>
+                    <td>
+                        ${j.status === 'belum' ? 
+                          `<button class="action-btn paid-btn" onclick="tandaiLunas(${index})">Tandai Lunas</button>` : 
+                          ''}
+                        <button class="action-btn delete-btn" onclick="hapusPenjualan(${index})">Hapus</button>
+                    </td>
+                `;
+                
+                // Add to piutang table if belum bayar
+                if (j.status === 'belum') {
+                    const piutangRow = tabelPiutang.insertRow();
+                    piutangRow.innerHTML = `
+                        <td>${formatDate(j.tanggal)} ${j.jam || ''}</td>
+                        <td>${produkData.nama}</td>
+                        <td>${j.jumlah}</td>
+                        <td>Rp ${formatNumber(total)}</td>
+                        <td>
+                            <button class="action-btn paid-btn" onclick="tandaiLunas(${index})">Tandai Lunas</button>
+                            <button class="action-btn delete-btn" onclick="hapusPenjualan(${index})">Hapus</button>
+                        </td>
+                    `;
+                }
+            });
+        }
+        
+        // Load pengeluaran data
+        function loadPengeluaran() {
+            const tabelPengeluaran = document.getElementById('tabel-pengeluaran').getElementsByTagName('tbody')[0];
+            
+            // Clear table
+            tabelPengeluaran.innerHTML = '';
+            
+            // Add pengeluaran to table
+            pengeluaran.forEach((p, index) => {
+                const row = tabelPengeluaran.insertRow();
+                row.innerHTML = `
+                    <td>${formatDate(p.tanggal)}</td>
+                    <td>${formatKategori(p.kategori)}</td>
+                    <td>${p.deskripsi}</td>
+                    <td>Rp ${formatNumber(p.jumlah)}</td>
+                    <td>
+                        <button class="action-btn delete-btn" onclick="hapusPengeluaran(${index})">Hapus</button>
+                    </td>
+                `;
+            });
+        }
+        
+        // Load jam transaksi data
+        function loadJamTransaksi() {
+            const daftarJamTransaksi = document.getElementById('daftar-jam-transaksi');
+            
+            // Clear list
+            daftarJamTransaksi.innerHTML = '';
+            
+            // Add jam transaksi to list
+            jamTransaksi.forEach((jam, index) => {
+                const jamItem = document.createElement('div');
+                jamItem.className = 'jam-item';
+                
+                const jamInfo = document.createElement('div');
+                jamInfo.className = 'jam-info';
+                
+                const jamHari = document.createElement('div');
+                jamHari.className = 'jam-hari';
+                jamHari.textContent = formatHari(jam.hari);
+                
+                const jamWaktu = document.createElement('div');
+                jamWaktu.className = 'jam-waktu';
+                jamWaktu.textContent = `${jam.buka} - ${jam.tutup}`;
+                
+                jamInfo.appendChild(jamHari);
+                jamInfo.appendChild(jamWaktu);
+                
+                const jamStatus = document.createElement('div');
+                jamStatus.className = jam.status === 'buka' ? 'status-buka' : 'status-tutup';
+                jamStatus.textContent = jam.status === 'buka' ? 'BUKA' : 'TUTUP';
+                
+                const jamActions = document.createElement('div');
+                jamActions.innerHTML = `
+                    <button class="action-btn edit-btn" onclick="editJamTransaksi(${index})">Edit</button>
+                    <button class="action-btn delete-btn" onclick="hapusJamTransaksi(${index})">Hapus</button>
+                `;
+                
+                jamItem.appendChild(jamInfo);
+                jamItem.appendChild(jamStatus);
+                jamItem.appendChild(jamActions);
+                
+                daftarJamTransaksi.appendChild(jamItem);
+            });
+        }
+        
+        // Update dashboard
+        function updateDashboard() {
+            // Calculate totals
+            let totalModal = 0;
+            let totalPenjualan = 0;
+            let totalKeuntungan = 0;
+            let totalBelumBayar = 0;
+            
+            // Calculate modal from produk
+            produk.forEach(p => {
+                totalModal += p.modal;
+            });
+            
+            // Calculate penjualan and keuntungan
+            penjualan.forEach(j => {
+                const produkData = produk[j.produkIndex];
+                const total = produkData.harga * j.jumlah;
+                const modal = produkData.modal * j.jumlah;
+                
+                if (j.status === 'lunas') {
+                    totalPenjualan += total;
+                    totalKeuntungan += (total - modal);
+                } else {
+                    totalBelumBayar += total;
+                }
+            });
+            
+            // Calculate pengeluaran
+            pengeluaran.forEach(p => {
+                totalModal += p.jumlah;
+            });
+            
+            // Update dashboard elements
+            totalModalEl.textContent = `Rp ${formatNumber(totalModal)}`;
+            totalPenjualanEl.textContent = `Rp ${formatNumber(totalPenjualan)}`;
+            totalKeuntunganEl.textContent = `Rp ${formatNumber(totalKeuntungan)}`;
+            totalBelumBayarEl.textContent = `Rp ${formatNumber(totalBelumBayar)}`;
+        }
+        
+        // Save produk
+        function simpanProduk() {
+            const id = document.getElementById('produk-id').value;
+            const nama = document.getElementById('nama-produk').value;
+            const harga = parseInt(document.getElementById('harga-produk').value);
+            const modal = parseInt(document.getElementById('modal-produk').value);
+            
+            if (id) {
+                // Edit existing produk
+                produk[id] = { nama, harga, modal };
+            } else {
+                // Add new produk
+                produk.push({ nama, harga, modal });
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('produk', JSON.stringify(produk));
+            
+            // Reset form
+            document.getElementById('produk-form').reset();
+            document.getElementById('produk-id').value = '';
+            
+            // Reload data
+            loadProduk();
+            updateDashboard();
+            updateDataStats();
+        }
+        
+        // Save penjualan
+        function simpanPenjualan() {
+            const produkIndex = parseInt(document.getElementById('produk-terjual').value);
+            const jumlah = parseInt(document.getElementById('jumlah-terjual').value);
+            const tanggal = document.getElementById('tanggal-penjualan').value;
+            const jam = document.getElementById('jam-penjualan').value;
+            const status = document.getElementById('status-bayar').value;
+            
+            // Add new penjualan
+            penjualan.push({ produkIndex, jumlah, tanggal, jam, status });
+            
+            // Save to localStorage
+            localStorage.setItem('penjualan', JSON.stringify(penjualan));
+            
+            // Reset form
+            document.getElementById('penjualan-form').reset();
+            const now = new Date();
+            document.getElementById('tanggal-penjualan').valueAsDate = now;
+            document.getElementById('jam-penjualan').value = formatTime(now);
+            
+            // Reload data
+            loadPenjualan();
+            updateDashboard();
+            updateDataStats();
+        }
+        
+        // Save pengeluaran
+        function simpanPengeluaran() {
+            const kategori = document.getElementById('kategori-pengeluaran').value;
+            const deskripsi = document.getElementById('deskripsi-pengeluaran').value;
+            const jumlah = parseInt(document.getElementById('jumlah-pengeluaran').value);
+            const tanggal = document.getElementById('tanggal-pengeluaran').value;
+            
+            // Add new pengeluaran
+            pengeluaran.push({ kategori, deskripsi, jumlah, tanggal });
+            
+            // Save to localStorage
+            localStorage.setItem('pengeluaran', JSON.stringify(pengeluaran));
+            
+            // Reset form
+            document.getElementById('pengeluaran-form').reset();
+            document.getElementById('tanggal-pengeluaran').valueAsDate = new Date();
+            
+            // Reload data
+            loadPengeluaran();
+            updateDashboard();
+            updateDataStats();
+        }
+        
+        // Save jam transaksi
+        function simpanJamTransaksi() {
+            const hari = document.getElementById('hari-transaksi').value;
+            const buka = document.getElementById('buka-transaksi').value;
+            const tutup = document.getElementById('tutup-transaksi').value;
+            const status = document.getElementById('status-transaksi').value;
+            
+            // Check if hari already exists
+            const existingIndex = jamTransaksi.findIndex(j => j.hari === hari);
+            
+            if (existingIndex !== -1) {
+                // Update existing
+                jamTransaksi[existingIndex] = { hari, buka, tutup, status };
+            } else {
+                // Add new
+                jamTransaksi.push({ hari, buka, tutup, status });
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('jamTransaksi', JSON.stringify(jamTransaksi));
+            
+            // Reset form
+            document.getElementById('jam-transaksi-form').reset();
+            
+            // Reload data
+            loadJamTransaksi();
+            checkJamAktif();
+        }
+        
+        // Edit produk
+        function editProduk(index) {
+            const p = produk[index];
+            document.getElementById('produk-id').value = index;
+            document.getElementById('nama-produk').value = p.nama;
+            document.getElementById('harga-produk').value = p.harga;
+            document.getElementById('modal-produk').value = p.modal;
+            
+            // Scroll to form
+            document.getElementById('produk-form').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Edit jam transaksi
+        function editJamTransaksi(index) {
+            const jam = jamTransaksi[index];
+            document.getElementById('hari-transaksi').value = jam.hari;
+            document.getElementById('buka-transaksi').value = jam.buka;
+            document.getElementById('tutup-transaksi').value = jam.tutup;
+            document.getElementById('status-transaksi').value = jam.status;
+            
+            // Scroll to form
+            document.getElementById('jam-transaksi-form').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Delete produk
+        function hapusProduk(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+                produk.splice(index, 1);
+                localStorage.setItem('produk', JSON.stringify(produk));
+                loadProduk();
+                updateDashboard();
+                updateDataStats();
+            }
+        }
+        
+        // Delete penjualan
+        function hapusPenjualan(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data penjualan ini?')) {
+                penjualan.splice(index, 1);
+                localStorage.setItem('penjualan', JSON.stringify(penjualan));
+                loadPenjualan();
+                updateDashboard();
+                updateDataStats();
+            }
+        }
+        
+        // Delete pengeluaran
+        function hapusPengeluaran(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data pengeluaran ini?')) {
+                pengeluaran.splice(index, 1);
+                localStorage.setItem('pengeluaran', JSON.stringify(pengeluaran));
+                loadPengeluaran();
+                updateDashboard();
+                updateDataStats();
+            }
+        }
+        
+        // Delete jam transaksi
+        function hapusJamTransaksi(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus jam transaksi ini?')) {
+                jamTransaksi.splice(index, 1);
+                localStorage.setItem('jamTransaksi', JSON.stringify(jamTransaksi));
+                loadJamTransaksi();
+                checkJamAktif();
+            }
+        }
+        
+        // Tandai lunas
+        function tandaiLunas(index) {
+            penjualan[index].status = 'lunas';
+            localStorage.setItem('penjualan', JSON.stringify(penjualan));
+            loadPenjualan();
+            updateDashboard();
+            updateDataStats();
+        }
+        
+        // ==================== BACKUP FUNCTIONS ====================
+        
+        // Fungsi ekspor data ke file JSON
+        function exportData() {
+            const data = {
+                produk: produk,
+                penjualan: penjualan,
+                pengeluaran: pengeluaran,
+                jamTransaksi: jamTransaksi,
+                timestamp: new Date().toISOString(),
+                info: "JB Parfume Data Backup"
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `jb-parfume-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            alert('✅ Data berhasil diexport!');
+        }
+
+        // Fungsi impor data dari file
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('APAKAH ANDA YAKIN INGIN MENGIMPOR DATA?\nData saat ini akan digantikan dengan data dari file.')) {
+                        if (data.produk && data.penjualan && data.pengeluaran && data.jamTransaksi) {
+                            produk = data.produk;
+                            penjualan = data.penjualan;
+                            pengeluaran = data.pengeluaran;
+                            jamTransaksi = data.jamTransaksi;
+                            
+                            localStorage.setItem('produk', JSON.stringify(produk));
+                            localStorage.setItem('penjualan', JSON.stringify(penjualan));
+                            localStorage.setItem('pengeluaran', JSON.stringify(pengeluaran));
+                            localStorage.setItem('jamTransaksi', JSON.stringify(jamTransaksi));
+                            
+                            loadProduk();
+                            loadPenjualan();
+                            loadPengeluaran();
+                            loadJamTransaksi();
+                            updateDashboard();
+                            updateDataStats();
+                            
+                            alert('✅ Data berhasil diimpor!');
+                        } else {
+                            alert('❌ Format file tidak valid!');
+                        }
+                    }
+                } catch (error) {
+                    alert('❌ Error membaca file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            input.value = ''; // Reset input file
+        }
+
+        // Backup manual ke localStorage
+        function backupToLocal() {
+            localStorage.setItem('produk', JSON.stringify(produk));
+            localStorage.setItem('penjualan', JSON.stringify(penjualan));
+            localStorage.setItem('pengeluaran', JSON.stringify(pengeluaran));
+            localStorage.setItem('jamTransaksi', JSON.stringify(jamTransaksi));
+            alert('✅ Backup berhasil disimpan!');
+        }
+
+        // Auto-save function
+        function autoSave() {
+            localStorage.setItem('produk', JSON.stringify(produk));
+            localStorage.setItem('penjualan', JSON.stringify(penjualan));
+            localStorage.setItem('pengeluaran', JSON.stringify(pengeluaran));
+            localStorage.setItem('jamTransaksi', JSON.stringify(jamTransaksi));
+        }
+
+        // Hapus semua data
+        function clearAllData() {
+            if (confirm('🚨 APAKAH ANDA YAKIN INGIN MENGHAPUS SEMUA DATA?\n\nTindakan ini tidak dapat dibatalkan! Semua data akan hilang permanen!')) {
+                if (confirm('⚠️ SANGAT YAKIN?\n\nSemua data produk, penjualan, pengeluaran, dan pengaturan akan dihapus!')) {
+                    produk = [];
+                    penjualan = [];
+                    pengeluaran = [];
+                    jamTransaksi = [
+                        { hari: 'senin', buka: '08:00', tutup: '17:00', status: 'buka' },
+                        { hari: 'selasa', buka: '08:00', tutup: '17:00', status: 'buka' },
+                        { hari: 'rabu', buka: '08:00', tutup: '17:00', status: 'buka' },
+                        { hari: 'kamis', buka: '08:00', tutup: '17:00', status: 'buka' },
+                        { hari: 'jumat', buka: '08:00', tutup: '17:00', status: 'buka' },
+                        { hari: 'sabtu', buka: '09:00', tutup: '15:00', status: 'buka' },
+                        { hari: 'minggu', buka: '00:00', tutup: '00:00', status: 'tutup' }
+                    ];
+                    
+                    localStorage.clear();
+                    
+                    loadProduk();
+                    loadPenjualan();
+                    loadPengeluaran();
+                    loadJamTransaksi();
+                    updateDashboard();
+                    updateDataStats();
+                    
+                    alert('🗑️ Semua data berhasil dihapus!');
+                }
+            }
+        }
+
+        // Fungsi untuk menampilkan statistik data
+        function updateDataStats() {
+            const statsEl = document.getElementById('data-stats');
+            if (!statsEl) return;
+            
+            const totalProduk = produk.length;
+            const totalPenjualan = penjualan.length;
+            const totalPengeluaran = pengeluaran.length;
+            const totalPiutang = penjualan.filter(p => p.status === 'belum').length;
+            
+            let totalPendapatan = 0;
+            penjualan.forEach(j => {
+                if (j.status === 'lunas') {
+                    const produkData = produk[j.produkIndex];
+                    totalPendapatan += produkData.harga * j.jumlah;
+                }
+            });
+            
+            statsEl.innerHTML = `
+                <div class="data-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Produk</div>
+                        <div class="stat-value">${totalProduk}</div>
+                        <div class="stat-label">item</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Penjualan</div>
+                        <div class="stat-value">${totalPenjualan}</div>
+                        <div class="stat-label">transaksi</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Pengeluaran</div>
+                        <div class="stat-value">${totalPengeluaran}</div>
+                        <div class="stat-label">item</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Piutang</div>
+                        <div class="stat-value">${totalPiutang}</div>
+                        <div class="stat-label">transaksi</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Pendapatan</div>
+                        <div class="stat-value">Rp ${formatNumber(totalPendapatan)}</div>
+                        <div class="stat-label">lunas</div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                    🕒 Backup Terakhir: <strong>${new Date().toLocaleString('id-ID')}</strong>
+                </p>
+            `;
+        }
+        
+        // Helper functions
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID');
+        }
+        
+        function formatTime(date) {
+            return date.toTimeString().slice(0, 5);
+        }
+        
+        function formatKategori(kategori) {
+            const kategoriMap = {
+                'bahan-baku': 'Bahan Baku',
+                'kemasan': 'Kemasan',
+                'operasional': 'Operasional',
+                'lainnya': 'Lainnya'
+            };
+            return kategoriMap[kategori] || kategori;
+        }
+        
+        function formatHari(hari) {
+            const hariMap = {
+                'senin': 'Senin',
+                'selasa': 'Selasa',
+                'rabu': 'Rabu',
+                'kamis': 'Kamis',
+                'jumat': 'Jumat',
+                'sabtu': 'Sabtu',
+                'minggu': 'Minggu'
+            };
+            return hariMap[hari] || hari;
+        }
+    </script>
+</body>
+</html>
